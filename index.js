@@ -38,8 +38,7 @@ const addDepartment = [
 ];
 
 
-//FUNCTIONS
-//build object on prompts
+//function to initialize the program
 function init(){
 
     prompt(questions).then(async ({toDo}) => {
@@ -107,6 +106,7 @@ function init(){
 
             //if for ending session
             if (toDo=='End Session'){
+                console.log('\n\n UNTIL NEXT TIME! \n\n\n');
                 process.exit();
             }; //close end session if
 
@@ -122,9 +122,9 @@ function init(){
 
 }    //init
 
-console.log('WELCOME TO EMPLOYEE TRACKER!');
+console.log('\n\n\n WELCOME TO EMPLOYEE TRACKER!\n\n');
 
-// Function call to initialize app
+// Initialize the program
 init();
 
 
@@ -145,7 +145,8 @@ async function viewAllDepartments(){
 async function viewAllRoles(){
     let [ rows ] = await db.promise().query(
         `SELECT role.title AS job_title, role.id AS role_id, department.name AS department, role.salary AS salary_$ 
-         FROM role INNER JOIN department 
+         FROM role 
+         LEFT JOIN department 
          ON role.department_id=department.id
          ORDER BY role.title ASC;`);
     console.table(rows);
@@ -159,8 +160,8 @@ async function viewAllEmployees(){
         `SELECT employee.id AS employee_id, CONCAT(employee.last_name,', ', employee.first_name) AS employee, role.title AS job_title,
          department.name AS department,role.salary AS salary_$, CONCAT(e2.last_name,', ',e2.first_name) AS manager
          FROM employee
-         JOIN role ON employee.role_id=role.id
-         JOIN department ON role.department_id=department.id
+         LEFT JOIN role ON employee.role_id=role.id
+         LEFT JOIN department ON role.department_id=department.id
          LEFT JOIN employee e2 ON employee.manager_id=e2.id
          ORDER BY employee.id;`);
     console.table(rows);
@@ -171,7 +172,7 @@ async function viewAllEmployees(){
 //FUNCTION to view budget of every department
 async function viewBudgetDept(){
     let[rows]=await db.promise().query(
-        `SELECT department.name AS Department, SUM(role.salary) AS 'Budget Total' 
+        `SELECT department.name AS Department, SUM(role.salary) AS 'Budget Total in USD' 
          FROM employee 
          LEFT JOIN role ON employee.role_id=role.id 
          LEFT JOIN department ON role.department_id=department.id 
@@ -260,8 +261,12 @@ async function addARole(){
 //FUNCTION to add an employee
 async function addAnEmployee(){
     //function to query for role choices
-    const sqlRole =`SELECT title AS name, id AS value FROM role`;
-    const sqlManager=`SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value FROM employee INNER JOIN role ON employee.role_id=role.id;`;
+    const sqlRole =`SELECT title AS name, id AS value FROM role ORDER BY title ASC;`;
+    const sqlManager=   `SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value 
+                         FROM employee 
+                         INNER JOIN role 
+                         ON employee.role_id=role.id
+                         ORDER BY name ASC;`;
 
     await db.promise().query(sqlRole)
         .then((role)=>
@@ -298,7 +303,6 @@ async function addAnEmployee(){
                         choices:manager,
                     },).then(async (managerName)=>{
                         //add employee 
-                        console.log(employeePt1,' ',managerName) ;
                         //query to insert into database
                         const sqlEmployee=`INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)`;
                         //add to database
@@ -325,7 +329,11 @@ async function addAnEmployee(){
 //FUNCTION to update employee role
 async function updateEmployeeRole(){
     //query to select employee for prompt
-    const sqlEmployee=`SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value FROM employee INNER JOIN role ON employee.role_id=role.id;`;
+    const sqlEmployee=`SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value 
+                        FROM employee 
+                        INNER JOIN role 
+                        ON employee.role_id=role.id
+                        ORDER BY name ASC;`;
 
     //query database for employee names
     await db.promise().query(sqlEmployee).then((data)=>{
@@ -337,8 +345,10 @@ async function updateEmployeeRole(){
             message: ' Which employee\'s role will be updated?',
             choices:employeeChoice,
         },).then(async (employee)=>{
-                console.log(employee.employeeID);
-                let sql = `SELECT role.title AS name, role.id AS value FROM role;`;
+                
+                let sql = `SELECT role.title AS name, role.id AS value
+                            FROM role
+                            ORDER BY name ASC;`;
 
                 await db.promise().query(sql).then((roles)=>{
                     let roleChoice=roles[0];
@@ -349,8 +359,6 @@ async function updateEmployeeRole(){
                         message: `Which will be the new role?`,
                         choices:roleChoice,
                     },).then(async (data)=>{
-
-                        console.log(data.newRole,' ',employee.employeeID);
 
                         //query to update employee
                         const sqlUpdate=    `UPDATE employee
@@ -381,7 +389,10 @@ async function updateEmployeeRole(){
 //FUNCTION to update employee manager
 async function updateEmployeeManager(){
     //query to select employee for prompt
-    const sqlEmployee=`SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value FROM employee INNER JOIN role ON employee.role_id=role.id;`;
+    const sqlEmployee=`SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value 
+                        FROM employee 
+                        INNER JOIN role ON employee.role_id=role.id
+                        ORDER BY name ASC;`;
 
     //query database for employee names
     await db.promise().query(sqlEmployee).then((data)=>{
@@ -425,7 +436,11 @@ async function updateEmployeeManager(){
 //FUNCTION to delete employee
 async function deleteEmployee(){
     //mysql for finding all employees
-    const sqlEmployee=`SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value FROM employee INNER JOIN role ON employee.role_id=role.id;`;
+    const sqlEmployee=`SELECT CONCAT(employee.last_name,', ',employee.first_name,' - ',role.title) AS name, employee.id AS value 
+                        FROM employee 
+                        LEFT JOIN role 
+                        ON employee.role_id=role.id
+                        ORDER BY name ASC;`;
 
     await db.promise().query(sqlEmployee)
         .then((employee)=>{
@@ -458,7 +473,9 @@ async function deleteEmployee(){
 //FUNCTION to delete role
 async function deleteRole(){
     //mysql for finding all roles
-    const sqlRole=`SELECT role.title AS name, role.id AS value FROM role;`;
+    const sqlRole=`SELECT role.title AS name, role.id AS value 
+                    FROM role
+                    ORDER BY name ASC;`;
 
     await db.promise().query(sqlRole)
         .then((roles)=>{
@@ -473,13 +490,13 @@ async function deleteRole(){
                     choices: roleChoice,
                 },
             ).then(async (data)=>{
-                console.log(data.roleDel);
+                
                 //query for deletion
                 const sqlDel=   `DELETE FROM role
                                  WHERE id=${data.roleDel};`;
                 await db.promise().query(sqlDel).then(()=>{
                     //log result
-                    console.log(`The role with id number ${data.Emp} was deleted.`);
+                    console.log(`The role with id number ${data.roleDel} was deleted.`);
 
                     //go back to main question menu
                     init();    
@@ -491,7 +508,9 @@ async function deleteRole(){
 //FUNCTION to delete department
 async function deleteDepartment(){
     //mysql for finding all department
-    const sqlDept=`SELECT department.name, department.id AS value FROM department;`;
+    const sqlDept=`SELECT department.name, department.id AS value 
+                    FROM department
+                    ORDER BY name ASC;`;
 
     await db.promise().query(sqlDept)
         .then((dept)=>{
@@ -506,7 +525,7 @@ async function deleteDepartment(){
                     choices: deptChoice,
                 },
             ).then(async (data)=>{
-                console.log(data.deptDel);
+                
                 //query for deletion
                 const sqlDel=   `DELETE FROM department
                                  WHERE id=${data.deptDel};`;
