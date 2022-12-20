@@ -247,7 +247,9 @@ async function addADepartment(){
 //FUNCTION to add a role
 async function addARole(){
     //function to query for department choices for add role prompt
-    const sql =`SELECT name, id AS value FROM department`;
+    const sql =`SELECT name, id AS value 
+                FROM department
+                ORDER BY name;`;
 
     await db.promise().query(sql)
         .then((data)=>{
