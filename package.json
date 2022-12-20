@@ -1,0 +1,29 @@
+{
+  "name": "02-challenge",
+  "version": "1.0.0",
+  "description": "A program that lets business owner view and manage departments, view roles, employees, add department, add role, add employee and update an employee role. This program uses Node.js, Inquirer and MySQL.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Ivy Wirsing",
+  "license": "MIT",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.4",
+    "mysql2": "^2.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iwirsing/module-12-employee-tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iwirsing/module-12-employee-tracker/issues"
+  },
+  "homepage": "https://github.com/iwirsing/module-12-employee-tracker#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
