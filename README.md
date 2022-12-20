@@ -10,10 +10,11 @@ A program that lets business owners view all departments, view all roles, view a
 2. [Usage](#usage) 
 3. [Contributing](#contributing) 
 4. [Screenshots](#screenshots)
-4. [Test](#test) 
-5. [Questions](#questions)
-6. [License](#license)
-7. [Sources](#sources)
+5. [Walkthrough Video](#walkthrough-video)
+6. [Test](#test) 
+7. [Questions](#questions)
+8. [License](#license)
+9. [Sources](#sources)
 
 ## Installation 
 
@@ -54,6 +55,9 @@ The rest of the options:
 ![next_questions](./Assets/Part2.png)
 
 ![next_questions2](./Assets/Part3.png)
+
+## Walkthrough Video
+[![walkthrough](./Assets/employeeTrackerScreen.png)](https://vimeo.com/783011413/bc6506ab39)
 
 ## Test 
 
