@@ -14,7 +14,7 @@ const questions = [
         choices: [  'View All Departments',
                     'View All Roles',
                     'View All Employees', 
-                    'View Budget',
+                    'View Budget of Every Department',
                     'Add a Department',
                     'Add a Role', 
                     'Add an Employee',
@@ -59,6 +59,11 @@ function init(){
             if (toDo=='View All Employees'){
                 viewAllEmployees();
             };
+
+            //check if view budget of every department
+            if(toDo=='View Budget of Every Department'){
+                viewBudgetDept();
+            };//close view budget every dept
 
             //check if user wants to add a department
             if (toDo=='Add a Department'){
@@ -117,6 +122,7 @@ function init(){
 
 }    //init
 
+console.log('WELCOME TO EMPLOYEE TRACKER!');
 
 // Function call to initialize app
 init();
@@ -126,7 +132,10 @@ init();
 
 //FUNCTION to view all departments
 async function viewAllDepartments(){
-    let [ rows ] = await db.promise().query('SELECT department.name AS department, department.id AS department_id FROM department');
+    let [ rows ] = await db.promise().query(
+        `SELECT department.name AS department, department.id AS department_id 
+         FROM department
+         ORDER BY department.name ASC;`);
     console.table(rows);
     //go back to main question menu
     init();
@@ -134,9 +143,11 @@ async function viewAllDepartments(){
 
 //FUNCTION to view all roles
 async function viewAllRoles(){
-    let [ rows ] = await db.promise().query(`SELECT role.title AS job_title, role.id AS role_id, department.name AS department, role.salary AS salary_$ 
-    FROM role INNER JOIN department 
-    ON role.department_id=department.id;`);
+    let [ rows ] = await db.promise().query(
+        `SELECT role.title AS job_title, role.id AS role_id, department.name AS department, role.salary AS salary_$ 
+         FROM role INNER JOIN department 
+         ON role.department_id=department.id
+         ORDER BY role.title ASC;`);
     console.table(rows);
     //go back to main question menu
     init();
@@ -144,17 +155,33 @@ async function viewAllRoles(){
 
 //FUNCTION to view all employees
 async function viewAllEmployees(){
-    let [ rows ] = await db.promise().query(`SELECT employee.id AS employee_id, CONCAT(employee.last_name,', ', employee.first_name) AS employee, role.title AS job_title,
-    department.name AS department,role.salary AS salary_$, CONCAT(e2.last_name,', ',e2.first_name) AS manager
-    FROM employee
-    JOIN role ON employee.role_id=role.id
-    JOIN department ON role.department_id=department.id
-    LEFT JOIN employee e2 ON employee.manager_id=e2.id
-    ORDER BY employee.id;`);
+    let [ rows ] = await db.promise().query(
+        `SELECT employee.id AS employee_id, CONCAT(employee.last_name,', ', employee.first_name) AS employee, role.title AS job_title,
+         department.name AS department,role.salary AS salary_$, CONCAT(e2.last_name,', ',e2.first_name) AS manager
+         FROM employee
+         JOIN role ON employee.role_id=role.id
+         JOIN department ON role.department_id=department.id
+         LEFT JOIN employee e2 ON employee.manager_id=e2.id
+         ORDER BY employee.id;`);
     console.table(rows);
     //go back to main question menu
     init();
 }//close view all employees
+
+//FUNCTION to view budget of every department
+async function viewBudgetDept(){
+    let[rows]=await db.promise().query(
+        `SELECT department.name AS Department, SUM(role.salary) AS 'Budget Total' 
+         FROM employee 
+         LEFT JOIN role ON employee.role_id=role.id 
+         LEFT JOIN department ON role.department_id=department.id 
+         GROUP BY department.name
+         ORDER BY department.name ASC;`
+    );
+    console.table(rows);
+    //go back to main question menu
+    init();
+}//close view budget of every department
 
 //FUNCTION to add a department
 async function addADepartment(){
