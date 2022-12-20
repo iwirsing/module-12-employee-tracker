@@ -288,7 +288,7 @@ async function addARole(){
                 
             }).then(()=>{
                 //log the result of query
-                console.log(`The ${newRole} role has been successfully added in the ${roleDepartment} department !`);
+                console.log(`The ${newRole} role has been successfully added in the database!`);
                 
                 //go back to main question menu
                 init();     
@@ -353,7 +353,7 @@ async function addAnEmployee(){
                             
                         }).then(()=>{
                             //log the result of query
-                            console.log(`The new employee ${employeePt1.lastName}, ${employeePt1.firstName} has been successfully added in the database as ${employeePt1.employeeRole}.`);
+                            console.log(`The new employee ${employeePt1.lastName}, ${employeePt1.firstName} has been successfully added in the database with id ${employeePt1.employeeRole}.`);
                             
                             //go back to main question menu
                             init();     
@@ -501,7 +501,7 @@ async function deleteEmployee(){
                                  WHERE id=${data.Emp};`;
                 await db.promise().query(sqlDel).then(()=>{
                     //log result
-                    console.log(`The employee with id:${data.Emp} was deleted.`);
+                    console.log(`The employee with employee id of ${data.Emp} was deleted.`);
 
                     //go back to main question menu
                     init();    
@@ -536,7 +536,7 @@ async function deleteRole(){
                                  WHERE id=${data.roleDel};`;
                 await db.promise().query(sqlDel).then(()=>{
                     //log result
-                    console.log(`The role with id number ${data.roleDel} was deleted.`);
+                    console.log(`The role with id ${data.roleDel} was deleted.`);
 
                     //go back to main question menu
                     init();    
@@ -571,7 +571,7 @@ async function deleteDepartment(){
                                  WHERE id=${data.deptDel};`;
                 await db.promise().query(sqlDel).then(()=>{
                     //log result
-                    console.log(`The department with id number ${data.deptDel} was deleted.`);
+                    console.log(`The department with id ${data.deptDel} was deleted.`);
 
                     //go back to main question menu
                     init();    
