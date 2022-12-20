@@ -14,6 +14,8 @@ const questions = [
         choices: [  'View All Departments',
                     'View All Roles',
                     'View All Employees', 
+                    'View Employees by Manager',
+                    'View Employees by Department',
                     'View Budget of Every Department',
                     'Add a Department',
                     'Add a Role', 
@@ -47,17 +49,27 @@ function init(){
             //check if view all departments
             if (toDo=='View All Departments'){
                 viewAllDepartments();
-            };
+            };//close view all dept
 
             //check if view all roles
             if (toDo=='View All Roles'){
                 viewAllRoles();
-            };
+            };//close view all roles
 
             //check if view all employees
             if (toDo=='View All Employees'){
                 viewAllEmployees();
-            };
+            };//close view all employees
+
+            //check if view employees by manager
+            if (toDo=='View Employees by Manager'){
+                ViewEmployeesByManager();
+            };//close view employees by Manager
+
+            //check to view employees by department
+            if (toDo =='View Employees by Department'){
+                viewEmployeesByDepartment();
+            }//close view employees by dept
 
             //check if view budget of every department
             if(toDo=='View Budget of Every Department'){
@@ -157,8 +169,8 @@ async function viewAllRoles(){
 //FUNCTION to view all employees
 async function viewAllEmployees(){
     let [ rows ] = await db.promise().query(
-        `SELECT employee.id AS employee_id, CONCAT(employee.last_name,', ', employee.first_name) AS employee, role.title AS job_title,
-         department.name AS department,role.salary AS salary_$, CONCAT(e2.last_name,', ',e2.first_name) AS manager
+        `SELECT employee.id AS Employee_id, CONCAT(employee.last_name,', ', employee.first_name) AS Employee, role.title AS job_title,
+         department.name AS Department,role.salary AS 'Salary in USD', CONCAT(e2.last_name,', ',e2.first_name) AS Manager
          FROM employee
          LEFT JOIN role ON employee.role_id=role.id
          LEFT JOIN department ON role.department_id=department.id
@@ -168,6 +180,32 @@ async function viewAllEmployees(){
     //go back to main question menu
     init();
 }//close view all employees
+
+async function ViewEmployeesByManager(){
+    let[rows]=await db.promise().query(
+        `SELECT CONCAT(e2.last_name,', ',e2.first_name) AS Manager, CONCAT(employee.last_name,', ',employee.first_name) AS 'Employee' 
+         FROM employee 
+         LEFT JOIN employee e2 ON employee.manager_id=e2.id
+         ORDER BY Manager ASC;`
+    );
+    console.table(rows);
+    //go back to main question menu
+    init();
+}//close view employees by manager
+
+//FUNCTION to view employees by department
+async function  viewEmployeesByDepartment(){
+    let[rows]=await db.promise().query(
+        `SELECT department.name AS Department, CONCAT(employee.last_name,', ',employee.first_name) AS 'Employee' 
+         FROM employee 
+         LEFT JOIN role ON employee.role_id=role.id 
+         LEFT JOIN department ON role.department_id=department.id 
+         ORDER BY department.name ASC;`
+    );
+    console.table(rows);
+    //go back to main question menu
+    init();
+}//close view all employees by department
 
 //FUNCTION to view budget of every department
 async function viewBudgetDept(){
