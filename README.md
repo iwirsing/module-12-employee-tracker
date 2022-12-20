@@ -3,7 +3,7 @@
 
 ##  Description:
 
-A program that lets business owners view all departments, view all roles, view all employees, view the budget of each department based on the actual employees, add department, add role, add employee , update an employee's role and manager, and delete department,role and employee. This program uses Node.js, Inquirer and MySQL.
+A program that lets business owners view all departments, view all roles, view all employees, view employees by department or manager, view the budget of each department based on the actual employees, add department, add role, add employee , update an employee's role and manager, and delete department,role and employee. This program uses Node.js, Inquirer and MySQL.
 
 ##  Table of Contents 
 1. [Installation](#installation)
